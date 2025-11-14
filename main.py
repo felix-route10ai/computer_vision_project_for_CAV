@@ -98,27 +98,80 @@ def find_nearest_segment(lat: float, lon: float, max_distance_km: float = 1.0) -
     return nearest
 
 
+def point_to_line_distance(px, py, x1, y1, x2, y2):
+    """Calculate perpendicular distance from point to line segment."""
+    # Vector from start to end
+    dx = x2 - x1
+    dy = y2 - y1
+
+    if dx == 0 and dy == 0:
+        # Start and end are the same point
+        return math.sqrt((px - x1)**2 + (py - y1)**2)
+
+    # Calculate the parameter t for the projection
+    t = max(0, min(1, ((px - x1) * dx + (py - y1) * dy) / (dx**2 + dy**2)))
+
+    # Find the closest point on the line segment
+    closest_x = x1 + t * dx
+    closest_y = y1 + t * dy
+
+    # Return distance to closest point
+    return math.sqrt((px - closest_x)**2 + (py - closest_y)**2)
+
+
 def find_route_segments(start_lat: float, start_lon: float,
                         end_lat: float, end_lon: float,
-                        corridor_width_km: float = 2.0) -> List[Dict]:
-    """Find all segments along a route corridor."""
+                        corridor_width_km: float = 5.0) -> List[Dict]:
+    """Find segments along route corridor using perpendicular distance."""
     route_segments = []
 
-    for segment in ROAD_SEGMENTS:
-        # Calculate perpendicular distance from segment to line between start/end
-        # Simplified: check if segment is within bounding box + buffer
-        lat_min = min(start_lat, end_lat) - corridor_width_km / \
-            111  # ~111km per degree
-        lat_max = max(start_lat, end_lat) + corridor_width_km / 111
-        lon_min = min(start_lon, end_lon) - corridor_width_km / \
-            85  # ~85km per degree at UK latitude
-        lon_max = max(start_lon, end_lon) + corridor_width_km / 85
+    # Convert corridor width to approximate degrees
+    corridor_degrees = corridor_width_km / 111  # ~111km per degree latitude
 
-        if (lat_min <= segment['latitude'] <= lat_max and
-                lon_min <= segment['longitude'] <= lon_max):
+    for segment in ROAD_SEGMENTS:
+        seg_lat = segment['latitude']
+        seg_lon = segment['longitude']
+
+        # First check bounding box for performance (quick reject)
+        lat_min = min(start_lat, end_lat) - corridor_degrees
+        lat_max = max(start_lat, end_lat) + corridor_degrees
+        lon_min = min(start_lon, end_lon) - corridor_degrees
+        lon_max = max(start_lon, end_lon) + corridor_degrees
+
+        if not (lat_min <= seg_lat <= lat_max and lon_min <= seg_lon <= lon_max):
+            continue
+
+        # Calculate perpendicular distance to route line
+        perp_distance_degrees = point_to_line_distance(
+            seg_lon, seg_lat,  # Point
+            start_lon, start_lat,  # Line start
+            end_lon, end_lat  # Line end
+        )
+
+        # Convert to approximate km (rough approximation)
+        perp_distance_km = perp_distance_degrees * 111
+
+        # Only include if within corridor
+        if perp_distance_km <= corridor_width_km:
             route_segments.append(segment)
 
     return route_segments
+
+
+def sample_segments_evenly(segments: List[Dict], max_samples: int = 200) -> List[Dict]:
+    """Sample segments evenly across the route for visualization."""
+    if len(segments) <= max_samples:
+        return segments
+
+    # Calculate step size to get evenly distributed samples
+    step = len(segments) / max_samples
+    sampled = []
+
+    for i in range(max_samples):
+        idx = int(i * step)
+        sampled.append(segments[idx])
+
+    return sampled
 
 
 def generate_recommendations(segments: List[Dict]) -> List[str]:
@@ -224,13 +277,15 @@ def assess_route(
     # Generate recommendations
     recommendations = generate_recommendations(segments)
 
+    # Sample segments for visualization (AFTER calculations)
+    display_segments = sample_segments_evenly(segments, max_samples=1000)
+
     return RouteAssessment(
         route_id=f"route_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}",
         total_distance_km=round(total_distance, 2),
         average_readiness_score=round(avg_score, 1),
         overall_risk_level=overall_risk,
-        # Limit to first 50 for demo
-        segments=[RoadSegment(**s) for s in segments[:50]],
+        segments=[RoadSegment(**s) for s in display_segments],
         critical_segments=[RoadSegment(**s) for s in critical_segments],
         recommendations=recommendations
     )
