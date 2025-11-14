@@ -10,7 +10,7 @@ import base64
 import os
 
 # === Load metadata ===
-CSV_PATH = "<your results folder>\inference_results\streamlit_metadata.csv"
+CSV_PATH = "D:\Google Drive\My Drive\CAV\inference_results\streamlit_metadata.csv"
 df = pd.read_csv(CSV_PATH)
 
 # === Sidebar Filters ===
@@ -61,6 +61,6 @@ for _, row in df_filtered.iterrows():
     ).add_to(marker_cluster)
 
 # === Display Map ===
-st.title("🛣️ CAV Route Risk Detection Viewer")
-st.markdown("""This map shows detected road features along the Dover to Milton Keynes route, with classification results overlayed as colored markers.""")
-st_data = st_folium(m, width=1000, height=600)
+st.title("Route10 - Route Risk Detection Viewer")
+st.markdown("""This map shows detected road features along the Dover to Milton Keynes route, with classification results overlayed as colored markers. Click on a marker for details""")
+st_data = st_folium(m, width=3000, height=800)
