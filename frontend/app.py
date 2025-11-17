@@ -15,7 +15,7 @@ import os
 # Page config
 st.set_page_config(
     page_title="Route10 AI - CAV Road Readiness",
-    page_icon="assets/R10_Logo_Sq.png",
+    page_icon="frontend/assets/R10_Logo_Sq.png",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -259,7 +259,7 @@ st.markdown("""
 
 # Sidebar
 with st.sidebar:
-    st.image("assets/logo.png",
+    st.image("frontend/assets/logo.png",
              use_container_width=True)
 
     st.markdown("### Assessment Mode")
