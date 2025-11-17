@@ -21,7 +21,7 @@ st.set_page_config(
 )
 
 # Configuration
-API_BASE_URL = st.secrets.get("API_URL", "http://localhost:8080")
+API_BASE_URL = st.secrets.get("API_URL")
 
 # Custom CSS for professional styling
 st.markdown("""
