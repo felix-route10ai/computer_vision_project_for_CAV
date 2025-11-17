@@ -263,7 +263,7 @@ st.markdown("""
 # Sidebar
 with st.sidebar:
     st.image(os.path.join(SCRIPT_DIR, "assets", "logo.png"),
-             use_container_width=True)
+             use_column_width=True)
 
     st.markdown("### Assessment Mode")
     mode = st.radio(
@@ -358,7 +358,7 @@ if mode == "Location Assessment":
         st.session_state.longitude = longitude
 
         assess_button = st.button(
-            "🔍 Assess Location", type="primary", use_container_width=True)
+            "🔍 Assess Location", type="primary", use_column_width=True)
 
     with col2:
         st.markdown("#### 💡 Assessment Tips")
@@ -453,7 +453,7 @@ if mode == "Location Assessment":
                             plot_bgcolor='rgba(0,0,0,0)',
                             paper_bgcolor='rgba(0,0,0,0)'
                         )
-                        st.plotly_chart(fig, use_container_width=True)
+                        st.plotly_chart(fig, use_column_width=True)
 
                     with col2:
                         st.markdown("#### Detected Features")
@@ -619,7 +619,7 @@ elif mode == "Route Assessment":
 
     route_supported = route_preset in available_routes
     assess_route_button = st.button(
-        "🔍 Assess Route", type="primary", use_container_width=True, disabled=not route_supported)
+        "🔍 Assess Route", type="primary", use_ccolumn_width=True, disabled=not route_supported)
 
     if not route_supported:
         st.warning(
@@ -737,7 +737,7 @@ elif mode == "Route Assessment":
                             xaxis_title="Readiness Score (%)",
                             yaxis_title="Number of Segments"
                         )
-                        st.plotly_chart(fig, use_container_width=True)
+                        st.plotly_chart(fig, use_column_width=True)
 
                     with col2:
                         risk_counts = segments_df['risk_level'].value_counts()
@@ -748,7 +748,7 @@ elif mode == "Route Assessment":
                             color=risk_counts.index,
                             color_discrete_map=color_map
                         )
-                        st.plotly_chart(fig, use_container_width=True)
+                        st.plotly_chart(fig, use_column_width=True)
 
                     # Recommendations
                     st.markdown("### 💡 Recommendations")
@@ -767,7 +767,7 @@ elif mode == "Route Assessment":
                             }
                             for s in route_data['critical_segments'][:10]
                         ])
-                        st.dataframe(critical_df, use_container_width=True)
+                        st.dataframe(critical_df, use_column_width=True)
 
                 elif response.status_code == 404:
                     st.error(f"""
@@ -837,7 +837,7 @@ elif mode == "UK Overview":
                 color_discrete_map={'COMPLIANT': 'green',
                                     'MODERATE': 'yellow', 'CRITICAL': 'red'}
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_column_width=True)
 
             # Key findings
             st.markdown("### 🔍 Key Findings")
