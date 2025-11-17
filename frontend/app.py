@@ -12,10 +12,13 @@ from datetime import datetime
 import json
 import os
 
+# Get the directory where this script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Page config
 st.set_page_config(
     page_title="Route10 AI - CAV Road Readiness",
-    page_icon="frontend/assets/R10_Logo_Sq.png",
+    page_icon=os.path.join(SCRIPT_DIR, "assets", "R10_Logo_Sq.png"),
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -259,7 +262,7 @@ st.markdown("""
 
 # Sidebar
 with st.sidebar:
-    st.image("frontend/assets/logo.png",
+    st.image(os.path.join(SCRIPT_DIR, "assets", "logo.png"),
              use_container_width=True)
 
     st.markdown("### Assessment Mode")
