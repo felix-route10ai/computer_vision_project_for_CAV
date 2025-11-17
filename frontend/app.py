@@ -358,7 +358,7 @@ if mode == "Location Assessment":
         st.session_state.longitude = longitude
 
         assess_button = st.button(
-            "🔍 Assess Location", type="primary", use_column_width=True)
+            "🔍 Assess Location", type="primary")
 
     with col2:
         st.markdown("#### 💡 Assessment Tips")
@@ -619,7 +619,7 @@ elif mode == "Route Assessment":
 
     route_supported = route_preset in available_routes
     assess_route_button = st.button(
-        "🔍 Assess Route", type="primary", use_ccolumn_width=True, disabled=not route_supported)
+        "🔍 Assess Route", type="primary", disabled=not route_supported)
 
     if not route_supported:
         st.warning(
